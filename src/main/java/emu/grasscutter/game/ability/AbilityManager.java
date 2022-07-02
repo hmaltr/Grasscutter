@@ -1,6 +1,8 @@
 package emu.grasscutter.game.ability;
 
+import java.util.*;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -14,8 +16,11 @@ import emu.grasscutter.data.excels.ItemData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.entity.EntityClientGadget;
+import emu.grasscutter.game.entity.EntityGadget;
 import emu.grasscutter.game.entity.EntityItem;
 import emu.grasscutter.game.entity.GameEntity;
+import emu.grasscutter.game.entity.gadget.GadgetGatherObject;
+import emu.grasscutter.game.entity.gadget.GadgetGatherPoint;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ElementType;
 import emu.grasscutter.net.proto.AbilityActionGenerateElemBallOuterClass.AbilityActionGenerateElemBall;
@@ -28,12 +33,15 @@ import emu.grasscutter.net.proto.AbilityScalarValueEntryOuterClass.AbilityScalar
 import emu.grasscutter.net.proto.ModifierActionOuterClass.ModifierAction;
 import emu.grasscutter.utils.Position;
 import emu.grasscutter.utils.Utils;
+import emu.grasscutter.game.props.FightProperty;
 
 public class AbilityManager {
 	private Player player;
+    HealAbilityManager healAbilityManager;
 	
 	public AbilityManager(Player player) {
 		this.player = player;
+        this.healAbilityManager = new HealAbilityManager(player);
 	}
 	
 	public Player getPlayer() {
@@ -41,7 +49,9 @@ public class AbilityManager {
 	}
 
 	public void onAbilityInvoke(AbilityInvokeEntry invoke) throws Exception {
-		// Grasscutter.getLogger().info(invoke.getArgumentType() + " (" + invoke.getArgumentTypeValue() + "): " + Utils.bytesToHex(invoke.toByteArray()));
+        healAbilityManager.healHandler(invoke);
+
+		 //Grasscutter.getLogger().info(invoke.getArgumentType() + " (" + invoke.getArgumentTypeValue() + "): " + Utils.bytesToHex(invoke.toByteArray()));
 		switch (invoke.getArgumentType()) {
 			case ABILITY_INVOKE_ARGUMENT_META_OVERRIDE_PARAM:
 				handleOverrideParam(invoke);
@@ -61,6 +71,7 @@ public class AbilityManager {
 			default:
 				break;
 		}
+
 	}
 
 	private void handleOverrideParam(AbilityInvokeEntry invoke) throws Exception {
@@ -90,18 +101,28 @@ public class AbilityManager {
 	}
 	
 	private void handleModifierChange(AbilityInvokeEntry invoke) throws Exception {
+		// Sanity checks
 		GameEntity target = player.getScene().getEntityById(invoke.getEntityId());
 		if (target == null) {
 			return;
 		}
 		
-		AbilityInvokeEntryHead head = invoke.getHead();
-		if (head == null) {
+		AbilityMetaModifierChange data = AbilityMetaModifierChange.parseFrom(invoke.getAbilityData());
+		if (data == null) {
 			return;
 		}
 		
-		AbilityMetaModifierChange data = AbilityMetaModifierChange.parseFrom(invoke.getAbilityData());
-		if (data == null) {
+		// Destroying rocks
+		if (target instanceof EntityGadget targetGadget && targetGadget.getContent() instanceof GadgetGatherObject gatherObject) {
+			if (data.getAction() == ModifierAction.REMOVED) {
+				gatherObject.dropItems(this.getPlayer());
+				return;
+			}
+        }
+		
+		// Sanity checks
+		AbilityInvokeEntryHead head = invoke.getHead();
+		if (head == null) {
 			return;
 		}
 		
@@ -125,6 +146,7 @@ public class AbilityManager {
 			// Add to meta modifier list
 			target.getMetaModifiers().put(head.getInstancedModifierId(), modifierString);
 		} else if (data.getAction() == ModifierAction.REMOVED) {
+			// Handle remove modifier
 			String modifierString = target.getMetaModifiers().get(head.getInstancedModifierId());
 			
 			if (modifierString != null) {
@@ -155,19 +177,6 @@ public class AbilityManager {
 	private void invokeAction(AbilityModifierAction action, GameEntity target, GameEntity sourceEntity) {
 		switch (action.type) {
 			case HealHP -> {
-				if (action.amount == null) {
-					return;
-				}
-				
-				float healAmount = 0;
-				
-				if (action.amount.isDynamic && action.amount.dynamicKey != null) {
-					healAmount = sourceEntity.getMetaOverrideMap().getOrDefault(action.amount.dynamicKey, 0f);
-				}
-				
-				if (healAmount > 0) {
-					target.heal(healAmount);
-				}
 			}
 			case LoseHP -> {
 				if (action.amountByTargetCurrentHPRatio == null) {

@@ -1,12 +1,16 @@
 package emu.grasscutter.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.danilopianini.util.FlexibleQuadTree;
 import org.danilopianini.util.SpatialIndex;
 
 import emu.grasscutter.Grasscutter;
+import emu.grasscutter.data.ResourceLoader.AvatarConfig;
+import emu.grasscutter.data.ResourceLoader.AvatarConfigAbility;
 import emu.grasscutter.data.excels.ReliquaryAffixData;
 import emu.grasscutter.data.excels.ReliquaryMainPropData;
 import emu.grasscutter.game.world.SpawnDataEntry;
@@ -16,9 +20,11 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class GameDepot {
-	private static Int2ObjectMap<WeightedList<ReliquaryMainPropData>> relicMainPropDepot = new Int2ObjectOpenHashMap<>();
-	private static Int2ObjectMap<List<ReliquaryAffixData>> relicAffixDepot = new Int2ObjectOpenHashMap<>();
+    private static Int2ObjectMap<WeightedList<ReliquaryMainPropData>> relicRandomMainPropDepot = new Int2ObjectOpenHashMap<>();
+    private static Int2ObjectMap<List<ReliquaryMainPropData>> relicMainPropDepot = new Int2ObjectOpenHashMap<>();
+    private static Int2ObjectMap<List<ReliquaryAffixData>> relicAffixDepot = new Int2ObjectOpenHashMap<>();
 	
+	private static Map<String, AvatarConfig> playerAbilities = new HashMap<>();
 	private static Int2ObjectMap<SpatialIndex<SpawnGroupEntry>> spawnLists = new Int2ObjectOpenHashMap<>();
 	
 	public static void load() {
@@ -26,8 +32,10 @@ public class GameDepot {
 			if (data.getWeight() <= 0 || data.getPropDepotId() <= 0) {
 				continue;
 			}
-			WeightedList<ReliquaryMainPropData> list = relicMainPropDepot.computeIfAbsent(data.getPropDepotId(), k -> new WeightedList<>());
-			list.add(data.getWeight(), data);
+            List<ReliquaryMainPropData> list = relicMainPropDepot.computeIfAbsent(data.getPropDepotId(), k -> new ArrayList<>());
+            list.add(data);
+            WeightedList<ReliquaryMainPropData> weightedList = relicRandomMainPropDepot.computeIfAbsent(data.getPropDepotId(), k -> new WeightedList<>());
+            weightedList.add(data.getWeight(), data);
 		}
 		for (ReliquaryAffixData data : GameData.getReliquaryAffixDataMap().values()) {
 			if (data.getWeight() <= 0 || data.getDepotId() <= 0) {
@@ -43,14 +51,18 @@ public class GameDepot {
 	}
 	
 	public static ReliquaryMainPropData getRandomRelicMainProp(int depot) {
-		WeightedList<ReliquaryMainPropData> depotList = relicMainPropDepot.get(depot);
+        WeightedList<ReliquaryMainPropData> depotList = relicRandomMainPropDepot.get(depot);
 		if (depotList == null) {
 			return null;
 		}
 		return depotList.next();
 	}
 	
-	public static List<ReliquaryAffixData> getRandomRelicAffixList(int depot) {
+    public static List<ReliquaryMainPropData> getRelicMainPropList(int depot) {
+        return relicMainPropDepot.get(depot);
+    }
+
+    public static List<ReliquaryAffixData> getRelicAffixList(int depot) {
 		return relicAffixDepot.get(depot);
 	}
 	
@@ -60,5 +72,13 @@ public class GameDepot {
 	
 	public static SpatialIndex<SpawnGroupEntry> getSpawnListById(int sceneId) {
 		return getSpawnLists().computeIfAbsent(sceneId, id -> new FlexibleQuadTree<>());
+	}
+
+	public static Map<String, AvatarConfig> getPlayerAbilities() {
+		return playerAbilities;
+	}
+
+	public static void setPlayerAbilities(Map<String, AvatarConfig> playerAbilities) {
+		GameDepot.playerAbilities = playerAbilities;
 	}
 }

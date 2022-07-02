@@ -13,9 +13,13 @@ import dev.morphia.query.experimental.filters.Filters;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.Grasscutter.ServerRunMode;
 import emu.grasscutter.game.Account;
+import emu.grasscutter.game.activity.PlayerActivityData;
+import emu.grasscutter.game.activity.musicgame.MusicGameBeatmap;
 import emu.grasscutter.game.avatar.Avatar;
+import emu.grasscutter.game.battlepass.BattlePassManager;
 import emu.grasscutter.game.friends.Friendship;
 import emu.grasscutter.game.gacha.GachaRecord;
+import emu.grasscutter.game.home.GameHome;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
@@ -27,16 +31,17 @@ import static emu.grasscutter.Configuration.*;
 public final class DatabaseManager {
 	private static Datastore gameDatastore;
 	private static Datastore dispatchDatastore;
-	
+
 	private static final Class<?>[] mappedClasses = new Class<?>[] {
-		DatabaseCounter.class, Account.class, Player.class, Avatar.class, GameItem.class, Friendship.class, 
-		GachaRecord.class, Mail.class, GameMainQuest.class
+		DatabaseCounter.class, Account.class, Player.class, Avatar.class, GameItem.class, Friendship.class,
+		GachaRecord.class, Mail.class, GameMainQuest.class, GameHome.class, BattlePassManager.class,
+        PlayerActivityData.class, MusicGameBeatmap.class
 	};
-    
+
     public static Datastore getGameDatastore() {
     	return gameDatastore;
     }
-    
+
     public static MongoDatabase getGameDatabase() {
     	return getGameDatastore().getDatabase();
     }

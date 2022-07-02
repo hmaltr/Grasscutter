@@ -10,9 +10,13 @@ import dev.morphia.query.experimental.filters.Filters;
 import emu.grasscutter.GameConstants;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.game.Account;
+import emu.grasscutter.game.activity.PlayerActivityData;
+import emu.grasscutter.game.activity.musicgame.MusicGameBeatmap;
 import emu.grasscutter.game.avatar.Avatar;
+import emu.grasscutter.game.battlepass.BattlePassManager;
 import emu.grasscutter.game.friends.Friendship;
 import emu.grasscutter.game.gacha.GachaRecord;
+import emu.grasscutter.game.home.GameHome;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.mail.Mail;
 import emu.grasscutter.game.player.Player;
@@ -37,11 +41,11 @@ public final class DatabaseHelper {
 			if (reservedUid == GameConstants.SERVER_CONSOLE_UID) {
 				return null;
 			}
-			
+
 			if (DatabaseHelper.checkIfAccountExists(reservedUid)) {
 				return null;
 			}
-			
+
 			// Make sure no existing player already has this id.
 			if (DatabaseHelper.checkIfPlayerExists(reservedUid)) {
 				return null;
@@ -83,33 +87,33 @@ public final class DatabaseHelper {
 	}
 
 	public static Account getAccountByName(String username) {
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("username", username)).first();
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("username", username)).first();
 	}
 
 	public static Account getAccountByToken(String token) {
 		if(token == null) return null;
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("token", token)).first();
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("token", token)).first();
 	}
 
 	public static Account getAccountBySessionKey(String sessionKey) {
 		if(sessionKey == null) return null;
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("sessionKey", sessionKey)).first();
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("sessionKey", sessionKey)).first();
 	}
 
 	public static Account getAccountById(String uid) {
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("_id", uid)).first();
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("_id", uid)).first();
 	}
 
 	public static Account getAccountByPlayerId(int playerId) {
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("reservedPlayerId", playerId)).first();
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("reservedPlayerId", playerId)).first();
 	}
-	
+
 	public static boolean checkIfAccountExists(String name) {
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("username", name)).count() > 0;
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("username", name)).count() > 0;
 	}
-	
+
 	public static boolean checkIfAccountExists(int reservedUid) {
-		return DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("reservedPlayerId", reservedUid)).count() > 0;
+		return DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("reservedPlayerId", reservedUid)).count() > 0;
 	}
 
 	public static void deleteAccount(Account target) {
@@ -118,17 +122,18 @@ public final class DatabaseHelper {
 		// database in an inconsistent state, but unfortunately Mongo only supports that when we have a replica set ...
 
 		Player player = Grasscutter.getGameServer().getPlayerByAccountId(target.getId());
-		
+
         if (player != null) {
         	// Close session first
             player.getSession().close();
-            
+
             // Delete data from collections
     		DatabaseManager.getGameDatabase().getCollection("mail").deleteMany(eq("ownerUid", player.getUid()));
     		DatabaseManager.getGameDatabase().getCollection("avatars").deleteMany(eq("ownerId", player.getUid()));
     		DatabaseManager.getGameDatabase().getCollection("gachas").deleteMany(eq("ownerId", player.getUid()));
     		DatabaseManager.getGameDatabase().getCollection("items").deleteMany(eq("ownerId", player.getUid()));
     		DatabaseManager.getGameDatabase().getCollection("quests").deleteMany(eq("ownerUid", player.getUid()));
+    		DatabaseManager.getGameDatabase().getCollection("battlepass").deleteMany(eq("ownerUid", player.getUid()));
 
     		// Delete friendships.
     		// Here, we need to make sure to not only delete the deleted account's friendships,
@@ -141,7 +146,7 @@ public final class DatabaseHelper {
         }
 
 		// Finally, delete the account itself.
-		DatabaseManager.getGameDatastore().find(Account.class).filter(Filters.eq("id", target.getId())).delete();
+		DatabaseManager.getAccountDatastore().find(Account.class).filter(Filters.eq("id", target.getId())).delete();
 	}
 
 	public static List<Player> getAllPlayers() {
@@ -151,11 +156,16 @@ public final class DatabaseHelper {
 	public static Player getPlayerByUid(int id) {
 		return DatabaseManager.getGameDatastore().find(Player.class).filter(Filters.eq("_id", id)).first();
 	}
-	
+
+    @Deprecated
 	public static Player getPlayerByAccount(Account account) {
 		return DatabaseManager.getGameDatastore().find(Player.class).filter(Filters.eq("accountId", account.getId())).first();
 	}
-	
+
+    public static Player getPlayerByAccount(Account account, Class<? extends Player> playerClass) {
+        return DatabaseManager.getGameDatastore().find(playerClass).filter(Filters.eq("accountId", account.getId())).first();
+    }
+
 	public static boolean checkIfPlayerExists(int uid) {
 		return DatabaseManager.getGameDatastore().find(Player.class).filter(Filters.eq("_id", uid)).count() > 0;
 	}
@@ -216,7 +226,7 @@ public final class DatabaseHelper {
 	public static List<GameItem> getInventoryItems(Player player) {
 		return DatabaseManager.getGameDatastore().find(GameItem.class).filter(Filters.eq("ownerId", player.getUid())).stream().toList();
 	}
-	
+
 	public static List<Friendship> getFriends(Player player) {
 		return DatabaseManager.getGameDatastore().find(Friendship.class).filter(Filters.eq("ownerId", player.getUid())).stream().toList();
 	}
@@ -270,29 +280,71 @@ public final class DatabaseHelper {
 	public static void saveGachaRecord(GachaRecord gachaRecord){
 		DatabaseManager.getGameDatastore().save(gachaRecord);
 	}
-	
+
 	public static List<Mail> getAllMail(Player player) {
 		return DatabaseManager.getGameDatastore().find(Mail.class).filter(Filters.eq("ownerUid", player.getUid())).stream().toList();
 	}
-	
+
 	public static void saveMail(Mail mail) {
 		DatabaseManager.getGameDatastore().save(mail);
 	}
-	
+
 	public static boolean deleteMail(Mail mail) {
 		DeleteResult result = DatabaseManager.getGameDatastore().delete(mail);
 		return result.wasAcknowledged();
 	}
-	
+
 	public static List<GameMainQuest> getAllQuests(Player player) {
 		return DatabaseManager.getGameDatastore().find(GameMainQuest.class).filter(Filters.eq("ownerUid", player.getUid())).stream().toList();
 	}
-	
+
 	public static void saveQuest(GameMainQuest quest) {
 		DatabaseManager.getGameDatastore().save(quest);
 	}
-	
+
 	public static boolean deleteQuest(GameMainQuest quest) {
 		return DatabaseManager.getGameDatastore().delete(quest).wasAcknowledged();
 	}
+
+	public static GameHome getHomeByUid(int id) {
+		return DatabaseManager.getGameDatastore().find(GameHome.class).filter(Filters.eq("ownerUid", id)).first();
+	}
+
+	public static void saveHome(GameHome gameHome) {
+		DatabaseManager.getGameDatastore().save(gameHome);
+	}
+
+	public static BattlePassManager loadBattlePass(Player player) {
+		BattlePassManager manager = DatabaseManager.getGameDatastore().find(BattlePassManager.class).filter(Filters.eq("ownerUid", player.getUid())).first();
+		if (manager == null) {
+			manager = new BattlePassManager(player);
+			manager.save();
+		} else {
+			manager.setPlayer(player);
+		}
+		return manager;
+	}
+
+	public static void saveBattlePass(BattlePassManager manager) {
+		DatabaseManager.getGameDatastore().save(manager);
+	}
+
+    public static PlayerActivityData getPlayerActivityData(int uid, int activityId) {
+        return DatabaseManager.getGameDatastore().find(PlayerActivityData.class)
+            .filter(Filters.and(Filters.eq("uid", uid),Filters.eq("activityId", activityId)))
+            .first();
+    }
+
+    public static void savePlayerActivityData(PlayerActivityData playerActivityData) {
+        DatabaseManager.getGameDatastore().save(playerActivityData);
+    }
+    public static MusicGameBeatmap getMusicGameBeatmap(long musicShareId) {
+        return DatabaseManager.getGameDatastore().find(MusicGameBeatmap.class)
+            .filter(Filters.eq("musicShareId", musicShareId))
+            .first();
+    }
+
+    public static void saveMusicGameBeatmap(MusicGameBeatmap musicGameBeatmap) {
+        DatabaseManager.getGameDatastore().save(musicGameBeatmap);
+    }
 }

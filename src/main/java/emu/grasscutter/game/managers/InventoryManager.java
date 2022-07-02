@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import emu.grasscutter.Grasscutter;
 import emu.grasscutter.data.GameData;
 import emu.grasscutter.data.binout.OpenConfigEntry;
 import emu.grasscutter.data.binout.OpenConfigEntry.SkillPointModifier;
@@ -22,14 +21,12 @@ import emu.grasscutter.data.excels.AvatarSkillDepotData.InherentProudSkillOpens;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.inventory.GameItem;
 import emu.grasscutter.game.inventory.ItemType;
-import emu.grasscutter.game.inventory.MaterialType;
 import emu.grasscutter.game.player.Player;
 import emu.grasscutter.game.props.ActionReason;
 import emu.grasscutter.game.shop.ShopChestBatchUseTable;
 import emu.grasscutter.game.shop.ShopChestTable;
 import emu.grasscutter.net.proto.ItemParamOuterClass.ItemParam;
 import emu.grasscutter.net.proto.MaterialInfoOuterClass.MaterialInfo;
-import emu.grasscutter.server.packet.send.PacketForgeFormulaDataNotify;
 import emu.grasscutter.server.game.GameServer;
 import emu.grasscutter.server.packet.send.*;
 import emu.grasscutter.utils.Utils;
@@ -150,7 +147,7 @@ public class InventoryManager {
 		int totalExp = relic.getTotalExp();
 		int reqExp = GameData.getRelicExpRequired(relic.getItemData().getRankLevel(), level);
 		int upgrades = 0;
-		List<Integer> oldAppendPropIdList = relic.getAppendPropIdList();
+        List<Integer> oldAppendPropIdList = new ArrayList<>(relic.getAppendPropIdList());
 		
 		while (expGain > 0 && reqExp > 0 && level < relic.getItemData().getMaxLevel()) {
 			// Do calculations
@@ -172,13 +169,7 @@ public class InventoryManager {
 			}
 		}
 		
-		if (upgrades > 0) {
-			oldAppendPropIdList = new ArrayList<>(relic.getAppendPropIdList());
-			while (upgrades > 0) {
-				relic.addAppendProp();
-				upgrades -= 1;
-			}
-		}
+        relic.addAppendProps(upgrades);
 		
 		// Save
 		relic.setLevel(level);
@@ -855,6 +846,40 @@ public class InventoryManager {
 				if (useItem.getItemData().getItemUse().get(0).getUseOp().equals("ITEM_USE_UNLOCK_FORGE")) {
 					// Unlock.
 					useSuccess = player.getForgingManager().unlockForgingBlueprint(useItem);
+				}
+				// Handle combine diagrams.
+				if (useItem.getItemData().getItemUse().get(0).getUseOp().equals("ITEM_USE_UNLOCK_COMBINE")) {
+					// Unlock.
+					useSuccess = player.getServer().getCombineManger().unlockCombineDiagram(player, useItem);
+				}
+				// Handle cooking recipies.
+				if (useItem.getItemData().getItemUse().get(0).getUseOp().equals("ITEM_USE_UNLOCK_COOK_RECIPE")) {
+					// Unlock.
+					useSuccess = player.getCookingManager().unlockRecipe(useItem);
+				}
+				break;
+			case MATERIAL_FURNITURE_FORMULA:
+			case MATERIAL_FURNITURE_SUITE_FORMULA:
+				if (useItem.getItemData().getItemUse() == null) {
+					break;
+				}
+				useSuccess = player.getFurnitureManager().unlockFurnitureOrSuite(useItem);
+
+				break;
+			case MATERIAL_CONSUME_BATCH_USE:
+				// Make sure we have usage data for this material.
+				if (useItem.getItemData().getItemUse() == null) {
+					break;
+				}
+
+				// Handle fragile/transient resin.
+				if (useItem.getItemId() == 107009 || useItem.getItemId() == 107012){				
+					// Add resin to the inventory.
+					ItemData resinItemData = GameData.getItemDataMap().get(106);
+					player.getInventory().addItem(new GameItem(resinItemData, 60 * count), ActionReason.PlayerUseItem);
+
+					// Set used amount.
+					used = count;
 				}
 				break;
 			case MATERIAL_CHEST:
