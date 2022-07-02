@@ -19,7 +19,7 @@
       "authentication": {
         "default_unable_to_verify": "[Authentication] Birisi verifyUser metodunu varsayılan doğrulama işleyicisinde olmamasına rağmen kullandı."
       },
-      "no_commands_error": "Komutlar salt-dispatch modundayken kullanılamaz.",
+      "no_commands_error": "Komutlar dispatch modundayken kullanılamaz.",
       "unhandled_request_error": "[Dispatch] Potansiyel işlenmemiş istek %s İstek: %s.",
       "account": {
         "login_attempt": "[Dispatch] İstemci %s giriş yapmayı deniyor.",
@@ -53,7 +53,11 @@
       "create_resources": "Kaynak klasörü oluşturuluyor...",
       "resources_error": "Bir 'BinOutput' ve 'ExcelBinOutput' kopyasını kaynak klasörünün içine koyunuz.",
       "version": "Grasscutter sürümü: %s-%s",
-      "game_version": "Oyun sürümü: %s"
+      "game_version": "Oyun sürümü: %s",
+      "resources": {
+        "loading": "Kaynaklar Yükleniyor...",
+        "finish": "Kaynaklar Başarıyla Yüklendi."
+      }
     }
   },
   "commands": {
@@ -64,7 +68,10 @@
       "console_execute_error": "Bu komut sadece konsoldan kullanılabilir.",
       "player_execute_error": "Bu komutu oyun içinde kullanın.",
       "command_exist_error": "Komut bulunamadı.",
+      "no_usage_specified": "Kullanım belirtilmedi.",
       "no_description_specified": "Açıklama belirtilmedi.",
+      "set_to": "%s %s olarak değiştirildi.",
+      "set_for_to": "%s için %s değiştirildi %s.",
       "invalid": {
         "amount": "Geçersiz miktar.",
         "artifactId": "Geçersiz artifact IDsi.",
@@ -74,54 +81,49 @@
         "itemId": "Geçersiz eşya IDsi.",
         "itemLevel": "Geçersiz itemLevel.",
         "itemRefinement": "Geçersiz itemRefinement.",
+        "statValue": "Geçersiz stat değeri.",
+        "value_between": "Geçersiz Değer: %s %s ile %s arasında olmalı.",
         "playerId": "Geçersiz oyuncu IDsi.",
-        "uid": "Geçersiz UID."
+        "uid": "Geçersiz UID.",
+        "id": "Geçersiz ID."
       }
     },
     "execution": {
-      "uid_error": "Geçersiz UID.",
       "player_exist_error": "Oyuncu bulunamadı.",
-      "player_offline_error": "Oyuncu online değil.",
-      "item_id_error": "Geçersiz eşya IDsi.",
+      "player_offline_error": "Oyuncu offline.",
       "item_player_exist_error": "Geçersiz eşya veya UID.",
-      "entity_id_error": "Geçersiz varlık IDsi.",
-      "player_exist_offline_error": "Oyuncu online değil.",
+      "player_exist_offline_error": "Oyuncu bulunamadı veya offline.",
       "argument_error": "Geçersiz argüman.",
       "clear_target": "Hedef temizlendi.",
-      "set_target": "Bundan sonraki komutlar artık varsayılan olarak @%s hedefleyecektir.",
+      "set_target": "Bundan sonraki komutlar varsayılan olarak @%s kullanıcısını hedefleyecek.",
       "set_target_online": "@%s online. Bazı komutlar offline bir oyuncu gerektirebilir.",
       "set_target_offline": "@%s offline. Bazı komutlar online bir oyuncu gerektirebilir.",
-      "need_target": "Bu komut hedef UID gerektirir. Bir argüman olarak <@UID> ekleyin veya varsayılan hedef belirlemek için /target @UID kullanın.",
-      "need_target_online": "Bu komut online bir UID gerektirir, ancak hedef offline. Farklı bir <@UID> argümanı girin veya varsayılan hedef belirlemek için /target @UID kullanın.",
-      "need_target_offline": "Bu komut offline bir UID gerektirir, ancak hedef online. Farklı bir <@UID> argümanı girin veya varsayılan hedef belirlemek için /target @UID kullanın."
+      "need_target": "Bu komut hedef UID gerektirir. <@UID> argümanı ekleyin veya varsayılan belirlemek için /target @UID kullanın.",
+      "need_target_online": "Bu komut online bir hedef UID gerektirir. Ancak belirtilen hedef offline. Başka bir <@UID> argümanı ekleyin veya varsayılan belirlemek için /target @UID kullanın.",
+      "need_target_offline": "Bu komut offline bir hedef UID gerektirir. Ancak belirtilen hedef online. Başka bir <@UID> argümanı ekleyin veya varsayılan belirlemek için /target @UID kullanın."
     },
     "status": {
       "enabled": "Aktif",
       "disabled": "Devre Dışı",
-      "help": "Yardım", 
+      "help": "Yardım",
       "success": "Başarılı"
     },
     "account": {
-      "modify": "Kullanıcı Hesaplarını Düzenle",
+      "command_usage": "Kullanım: account <create|delete> <username> [UID]",
       "invalid": "Geçersiz UID.",
-      "exists": "Bu UID'ye sahip bir kullanıcı zaten var.",
-      "create": "Hesap oluşturuldu UID %s.",
+      "exists": "Bu isimde veya UID'ye sahip bir hesap zaten var.",
+      "create": "UID %s hesabı oluşturuldu.",
       "delete": "Hesap silindi.",
       "no_account": "Hesap bulunamadı.",
-      "command_usage": "Kullanım: account <create|delete> <kullanıcı adı> [UID]",
-      "description": "Kullanıcı Hesaplarını Düzenle"
+      "description": "Kullanıcı hesaplarını yönetir"
     },
-    "broadcast": {
-      "command_usage": "Kullanım: broadcast <mesaj>",
-      "message_sent": "Mesaj Gönderildi.",
-      "description": "Tüm oyunculara mesaj gönderir"
-    },
-    "changescene": {
-      "usage": "Kullanım: changescene <sahneID>",
-      "already_in_scene": "Zaten bu sahnedesin.",
-      "success": "Sahne %s olarak değiştirildi.",
-      "exists_error": "Böyle bir sahne yok.",
-      "description": "Bulunduğunuz sahneyi değiştirir"
+    "announce": {
+      "command_usage": "Kullanım: a <tpl templateId|refresh|revoke templateId|content>",
+      "send_success": "Duyuru gönderildi. Duyuruyu geri çekmek için /a revoke %s kullanın.",
+      "refresh_success": "Duyuru ayarlar dosyası başarıyla yenilendi. (Toplam %s)",
+      "revoke_done": "Duyuru başarıyla geri çekildi %s.",
+      "description": "Tüm online oyunculara bir duyuru gönderir veya sunucunun duyuru mesajını değiştirir.",
+      "not_found": "%s Duyurusu bulunamadı."
     },
     "clear": {
       "command_usage": "Kullanım: clear <all|wp|art|mat>",
@@ -129,147 +131,120 @@
       "artifacts": "%s kullanıcısının artifactleri temizlendi.",
       "materials": "%s kullanıcısının materyalleri temizlendi.",
       "furniture": "%s kullanıcısının mobilyaları temizlendi.",
-      "displays": "%s kullanıcısının görünümleri temizlendi.",
+      "displays": "%s kullanıcısının displayleri temizlendi.",
       "virtuals": "%s kullanıcısının virtualleri temizlendi.",
-      "everything": "%s kullanıcısının her şeyi temizlendi.",
-      "description": "Kullanılmayan tüm eşyaları siler. 5* eşyalar dahildir."
+      "everything": "%s kullanıcısının tüm eşyaları temizlendi.",
+      "description": "5* olanlar dahil envanterdeki kilitli olmayan ve kullanılmayan eşyaları siler."
     },
     "coop": {
       "usage": "Kullanım: coop [host UID]",
-      "success": "%s %s'nin dünyasına çağrıldı.",
-      "description": "Birini başkasının dünyasına gönderir. Hedef belirtilmese bile coop moduna geçirir."
+      "success": "%s %s kullanıcısının dünyasına çağrıldı.",
+      "description": "Birisinin başkasının dünyasına girmesine zorlar. Hedef belirtilmese bile Co-Op modunu başlatır."
     },
     "enter_dungeon": {
       "usage": "Kullanım: enterdungeon <dungeonID>",
       "changed": "Zindan %s olarak değiştirildi.",
-      "not_found_error": "Böyle bir zindan yok.",
+      "not_found_error": "Bu zindan yok.",
       "in_dungeon_error": "Zaten bu zindandasın.",
       "description": "Bir zindana girmenizi sağlar"
     },
-    "giveAll": {
-      "usage": "Kullanım: giveall [kullanıcı] [miktar]",
-      "started": "Tüm eşyalar alınıyor...",
-      "success": "Tüm eşyalar %s'a verildi.",
-      "invalid_amount_or_playerId": "Geçersiz miktar veya UID.",
-      "description": "Tüm eşyaları verir"
-    },
-    "giveArtifact": {
-      "usage": "Kullanım: giveart|gart [oyuncu] <artifactID> <mainPropID> [<appendPropID>[,<çarpan>]]... [seviye]",
-      "id_error": "Geçersiz artifact ID.",
-      "success": "%s başarıyla %s'a verildi.",
-      "description": "Oyuncuya belirtilen bir artifacti verir."
-    },
-    "giveChar": {
-      "usage": "Kullanım: givechar <oyuncu> <avatarID> [seviye]",
-      "given": "%s Karakteri Seviye %s olarak %s'a verildi.",
-      "invalid_avatar_id": "Geçersiz avatarID.",
-      "invalid_avatar_level": "Geçersiz avatar seviyesi.",
-      "invalid_avatar_or_player_id": "Geçersiz avatar veya UID.",
-      "description": "Oyuncuya belirtilen karakteri verir."
-    },
     "give": {
-      "usage": "Kullanım: give <oyuncu> <itemID|item Adı> [miktar] [seviye] [refinement seviyesi]",
-      "refinement_only_applicable_weapons": "Refinement sadece silahlarda geçerlidir.",
-      "refinement_must_between_1_and_5": "Refinement 1 ve 5 arasında olmalıdır.",
-      "given": "%s Miktarında %s %s'a verildi.",
-      "given_with_level_and_refinement": "%s %s seviye ve refinement %s %s olarak %s'a verildi.",
-      "given_level": "%s seviye %s %s miktarında %s'a verildi.",
-      "description": "Oyuncuya belirtilen eşyayı verir."
-    },
-    "godmode": {
-      "success": "Ölümsüzlük %s için artık %s.",
-      "description": "Hasar almanızı engeller."
-    },
-    "nostamina": {
-      "success": "Sonsuz Stamina %s olarak %s oyuncusuna verildi.",
-      "description": "Staminanızın azalmasını engeller."
-    },
-    "unlimitenergy": {
-      "usage": "unlimitenergy [hedef UID] [on | off | toggle ]",
-      "success": "Sonsuz Güç %s olarak %s oyuncusuna verildi.",
-      "description": "Yetenekler elemental güç harcamaz.",
-      "config_error": "config.json bu komut kapatıldı."
+      "usage": "Kullanım: give <itemID|avatarID|\"all\"|\"weapons\"|\"mats\"|\"avatars\"> [x<amount>] [lv<level>] [r<refinement>]",
+      "usage_relic": "Kullanım: give <artifactID> [mainPropID] [<appendPropID>[,<times>]]... [lv<level 0-20>]",
+      "illegal_relic": "Bu artifactID karalistelenmiş aralıkta, istediğiniz şey olmayabilir.",
+      "given": "%s tane %s %s kullanıcısına verildi.",
+      "given_with_level_and_refinement": "%s %s seviyesinde, refinement %s %s olarak %s kullanıcısına verildi.",
+      "given_level": "%s %s seviyesinde %s kere %s kullanıcısına verildi.",
+      "given_avatar": "%s %s seviye olarak %s kullanıcısına verildi.",
+      "giveall_success": "Tüm eşyalar başarıyla verildi.",
+      "description": "Belirttiğiniz bir eşyayı bir oyuncuya verir. Ayrıca tüm silahlar, karakterler, materyaller vs. verebilir."
     },
     "heal": {
       "success": "Tüm karakterler iyileştirildi.",
-      "description": "Şu anki takımınızdaki tüm karakterleri iyileştirir"
+      "description": "Takımınızdaki tüm karakterleri iyileştirir."
+    },
+    "help": {
+      "usage": "Kullanım: ",
+      "aliases": "Diğer Adları: ",
+      "available_commands": "Kullanılabilir Komutlar: ",
+      "description": "Yardım mesajını veya bir komut hakkındaki bilgileri gösterir."
     },
     "kick": {
-      "player_kick_player": "Oyuncu [%s:%s] [%s:%s] oyuncusunu attı",
-      "server_kick_player": "[%s:%s] oyuncusu atılıyor...",
-      "description": "Belirtilen oyuncuyu sunucudan atar (BETA)"
+      "player_kick_player": "[%s:%s], [%s:%s] kullanıcısını attı",
+      "server_kick_player": "[%s:%s] atılıyor...",
+      "description": "Belirtilen oyuncuyu sunucudan atar (WIP)"
     },
     "killall": {
-      "usage": "Kullanım: killall [oyuncu UID] [Sahne ID]",
-      "scene_not_found_in_player_world": "Oyuncunun dünyasında bu sahne bulunamadı.",
-      "kill_monsters_in_scene": "%s canavar %s sahnesinde öldürülüyor.",
-      "description": "Tüm varlıkları öldürür"
+      "usage": "Kullanım: killall [playerUID] [sceneID]",
+      "scene_not_found_in_player_world": "Oyuncunun dünyasında belirtilen sahne bulunamadı.",
+      "kill_monsters_in_scene": "%s canavar %s sahnesinde öldürüldü.",
+      "description": "Tüm varlıkları öldürür."
     },
     "killCharacter": {
-      "usage": "Usage: killcharacter [playerID]",
-      "success": "Killed %s's current character.",
-      "description": "Kills the players current character"
+      "usage": "Kullanım: killcharacter [playerID]",
+      "success": "%s kullanıcısının aktif karakteri öldürüldü.",
+      "description": "Belirtilen oyuncunun aktif karakterini öldürür"
     },
     "language": {
-      "current_language": "Current language is %s.",
-      "language_changed": "Language changed to %s.",
-      "language_not_found": "Currently, the server does not have that language.",
-      "description": "Display or change current language"
+      "current_language": "Şu anki dil %s.",
+      "language_changed": "Dil %s olarak değiştirildi.",
+      "language_not_found": "Şu anda sunucu bu dili desteklemiyor.",
+      "description": "Sunucu dilini değiştirmenizi sağlar"
     },
     "list": {
-      "success": "There are %s player(s) online:",
-      "description": "List online players"
+      "success": "%s oyuncu(lar) online:",
+      "description": "Online oyuncuları gösterir"
     },
     "permission": {
-      "usage": "Usage: permission <add|remove> <username> <permission>",
-      "add": "Permission added.",
-      "has_error": "They already have this permission!",
-      "remove": "Permission removed.",
-      "not_have_error": "They don't have this permission!",
-      "account_error": "The account cannot be found.",
-      "description": "Grants or removes a permission for a user"
+      "usage": "Kullanım: permission <add|remove> <username> <permission>",
+      "add": "İzin eklendi.",
+      "has_error": "Zaten bu izne sahip!",
+      "remove": "İzin alındı.",
+      "not_have_error": "Bu izne sahip değil!",
+      "account_error": "Hesap bulunamadı.",
+      "description": "Bir kullanıcıya izin ekler/çıkarır."
     },
     "position": {
-      "success": "Coordinates: %s, %s, %s\nScene ID: %s",
-      "description": "Get coordinates"
+      "success": "Koordinatlar: %s, %s, %s\nSahne ID: %s",
+      "description": "Koordinatlarınızı gösterir"
     },
     "quest": {
       "usage": "quest <add|finish> [questID]",
-      "added": "Quest %s added.",
-      "finished": "Finished quest %s.",
-      "not_found": "Quest not found.",
-      "invalid_id": "Invalid quest ID.",
-      "description": "Add or finish quests"
+      "added": "Görev %s eklendi.",
+      "finished": "%s görevi bitirildi.",
+      "not_found": "Görev bulunamadı.",
+      "invalid_id": "Geçersiz görev IDsi.",
+      "description": "Görev ekler/kaldırır"
     },
     "reload": {
-      "reload_start": "Reloading config.",
-      "reload_done": "Reload complete.",
-      "description": "Reload server config"
+      "reload_start": "Ayarlar yeniden yükleniyor.",
+      "reload_done": "Yükleme tamamlandı.",
+      "description": "Sunucu ayarlarını yeniler"
     },
     "resetConst": {
-      "reset_all": "Reset all avatars' constellations.",
-      "success": "Constellations for %s have been reset. Please relog to see changes.",
-      "description": "Resets the constellation level on your current active character, you will need to relog after using the command to see any changes"
+      "reset_all": "Tüm karakterlerin constellation seviyelerini sıfırlar.",
+      "success": "%s için constellationlar sıfırlandı. Değişiklikleri görmek için tekrar giriş yapın.",
+      "description": "Aktif karakterinizin constellation seviyesini sıfırlar. Değişiklikleri görmek için tekrar giriş yapmanız gerekir."
     },
     "resetShopLimit": {
-      "usage": "Usage: resetshop <playerID>",
-      "success": "Reset complete.",
-      "description": "Reset target player's shop refresh time"
+      "usage": "Kullanım: resetshop <playerID>",
+      "success": "Başarıyla sıfırlandı.",
+      "description": "Belirtilen oyuncunun mağaza yenilenme süresini sıfırlar."
     },
     "sendMail": {
-      "usage": "Usage: sendmail <userID|all|help> [templateID]",
-      "user_not_exist": "The user with an ID of '%s' does not exist.",
-      "start_composition": "Starting composition of message.\nPlease use '/sendmail <title>' to continue.\nYou can use '/sendmail stop' at any time.",
-      "templates": "Mail templates coming soon implemented...",
-      "invalid_arguments": "Invalid arguments.",
-      "send_cancel": "Message sending cancelled.",
-      "send_done": "Message sent to user %s!",
-      "send_all_done": "Message sent to all users!",
-      "not_composition_end": "Message composition not at final stage.\nPlease use '/sendmail %s' or '/sendmail stop' to cancel",
-      "please_use": "Please use '/sendmail %s'",
-      "set_title": "Message title set as '%s'.\nUse '/sendmail <content>' to continue.",
-      "set_contents": "Message contents set as '%s'.\nUse '/sendmail <sender>' to continue.",
-      "set_message_sender": "Message sender set as '%s'.\nUse '/sendmail <itemID|itemName|finish> [amount] [level]' to continue.",
+      "usage": "Kullanım: sendmail <userID|all|help> [templateID]",
+      "user_not_exist": "'%s' IDsine sahip bir oyuncu yok.",
+      "start_composition": "Mail yazımına başlanıyor....\nLütfen '/sendmail <başlık>' yazarak devam ediniz.\nİstediğiniz zaman '/sendmail stop' yazabilirsiniz.",
+      "templates": "Mail şablonları yakında geliyor...",
+      "invalid_arguments": "Geçersiz argümanlar.",
+      "send_cancel": "Mail gönderimi iptal edildi.",
+      "send_done": "%s kullanıcısna mail gönderildi!",
+      "send_all_done": "Tüm kullanıcılara mail gönderildi!",
+      "not_composition_end": "Mail yazımı son aşamada değil.\nLütfen '/sendmail %s' veya '/sendmail stop' kullanarak iptal edebilirsiniz",
+      "please_use": "Lütfen '/sendmail %s' kullanın",
+      "set_title": "Mail başlığı '%s' olarak ayarlandı.\'/sendmail <content>' kullanarak devam edin.",
+      "set_contents": "Mail içeriği '%s' olarak ayarlandı.\n'/sendmail <sender>' kullanarak devam edin.",
+      "set_message_sender": "Mail göndericisi '%s' olarak ayarlandı.\n'/sendmail <itemID|itemName|finish> [miktar] [seviye]' kullanarak devam edin.",
       "send": "Attached %s of %s (level %s) to the message.\nContinue adding more items or use '/sendmail finish' to send the message.",
       "invalid_arguments_please_use": "Invalid arguments.\n Please use '/sendmail %s'",
       "title": "<title>",
@@ -280,9 +255,9 @@
       "description": "Sends mail to the specified user. The usage of this command changes based on its composition state"
     },
     "sendMessage": {
-      "usage": "Usage: sendmessage <player> <message>",
+      "usage": "Usage: sendmessage <message>",
       "success": "Message sent.",
-      "description": "Sends a message to a player as the server"
+      "description": "Sends a message to a player as the server. If used with no target, sends to all players on the server."
     },
     "setFetterLevel": {
       "usage": "Usage: setfetterlevel <level>",
@@ -291,24 +266,13 @@
       "level_error": "Invalid fetter level.",
       "description": "Sets your fetter level for your current active character"
     },
-    "setStats": {
-      "usage_console": "Usage: setstats|stats @<UID> <stat> <value>",
-      "usage_ingame": "Usage: setstats|stats [@UID] <stat> <value>",
-      "help_message": "\n\tValues for <stat>: hp | maxhp | def | atk | em | er | crate | cdmg | cdr | heal | heali | shield | defi\n\t(cont.) Elemental DMG Bonus: epyro | ecryo | ehydro | egeo | edendro | eelectro | ephys\n\t(cont.) Elemental RES: respyro | rescryo | reshydro | resgeo | resdendro | reselectro | resphys\n",
-      "value_error": "Invalid stat value.",
-      "uid_error": "Invalid UID.",
-      "player_error": "Player not found or offline.",
-      "set_self": "%s set to %s.",
-      "set_for_uid": "%s for %s set to %s.",
-      "set_max_hp": "MAX HP set to %s.",
-      "description": "Sets fight property for your current active character"
+    "setProp": {
+      "usage": "Usage: setprop|prop <prop> <value>\n\tValues for <prop>: godmode | nostamina | unlimitedenergy | abyss | worldlevel | bplevel\n\t(cont.) see PlayerProperty enum for other possible values, of form PROP_MAX_SPRING_VOLUME -> max_spring_volume",
+      "description": "Sets accountwide properties. Things like godmode can be enabled this way, as well as changing things like unlocked abyss floor and battle pass progress."
     },
-    "setWorldLevel": {
-      "usage": "Usage: setworldlevel <level>",
-      "value_error": "World level must be between 0-8.",
-      "success": "World level set to %s.",
-      "invalid_world_level": "Invalid world level.",
-      "description": "Sets your world level (Relog to see proper effects)"
+    "setStats": {
+      "usage": "Usage: setstats|stats <stat> <value>\n\tValues for <stat>: hp | maxhp | def | atk | em | er | crate | cdmg | cdr | heal | heali | shield | defi\n\t(cont.) Elemental DMG Bonus: epyro | ecryo | ehydro | egeo | edendro | eelectro | ephys\n\t(cont.) Elemental RES: respyro | rescryo | reshydro | resgeo | resdendro | reselectro | resphys\n",
+      "description": "Sets fight property for your current active character"
     },
     "spawn": {
       "usage": "Usage: spawn <entityID> [amount] [level(monster only)] [<x> <y> <z>(monster only, optional)]",
@@ -365,32 +329,28 @@
       "usage": "Usage: tp [@<playerID>] <x> <y> <z> [sceneID]",
       "specify_player_id": "You must specify a player ID.",
       "invalid_position": "Invalid position.",
+      "exists_error": "The specified scene does not exist.",
       "success": "Teleported %s to %s, %s, %s in scene %s.",
       "description": "Change the player's position"
     },
     "weather": {
-      "usage": "Usage: weather <climate type(weatherId)> <weather type(climateId)>\nWeather types: '0: None, 1: Sunny, 2: Cloudy, 3: Rain, 4: Thunderstorm, 5: Snow, 6: Mist'",
-      "success": "Changed climate type to %s with weather type %s.",
-      "invalid_id": "Invalid ID.",
-      "description": "Changes the weather"
+      "usage": "Usage: weather [weatherId] [climateType]\nWeather IDs can be found in WeatherExcelConfigData.json.\nClimate types: sunny, cloudy, rain, thunderstorm, snow, mist",
+      "success": "Set weather ID to %s with climate type %s.",
+      "status": "Current weather ID is %s with climate type %s.",
+      "description": "Changes weather ID and climate type. Weather IDs can be found in WeatherExcelConfigData.json.\nClimate types: sunny, cloudy, rain, thunderstorm, snow, mist"
     },
-    "drop": {
-      "command_usage": "Usage: drop <itemID|itemName> [amount]",
-      "success": "Dropped %s of %s.",
-      "description": "Drops an item near you"
+    "ban": {
+      "command_usage": "Usage: ban <@playerId> [timestamp] [reason]",
+      "success": "Successful.",
+      "failure": "Failed, player not found.",
+      "invalid_time": "Unable to parse timestamp.",
+      "description": "Ban a player"
     },
-    "help": {
-      "usage": "Usage: ",
-      "aliases": "Aliases: ",
-      "available_commands": "Available commands: ",
-      "description": "Sends the help message or shows information about a specified command"
-    },
-    "restart": {
-      "description": "Restarts the current session"
-    },
-    "unlocktower": {
-      "success": "Unlock done.",
-      "description": "Unlock all levels of tower"
+    "unban": {
+      "command_usage": "Usage: unban <@playerId>",
+      "success": "Successful.",
+      "failure": "Failed, player not found.",
+      "description": "Unban a player"
     }
   },
   "gacha": {
@@ -399,6 +359,11 @@
       "available_five_stars": "Available 5-star Items",
       "available_four_stars": "Available 4-star Items",
       "available_three_stars": "Available 3-star Items"
+    },
+    "records": {
+      "title": "Gacha Records",
+      "date": "Date",
+      "item": "Item"
     }
   },
   "documentation": {
